@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from py_chat.main.routers import users
+from py_chat.main.routers import friends, users
 
 
 @asynccontextmanager
@@ -15,8 +15,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(users.router)
-
-
-@app.get('/')
-def test():
-    return {'message': 'Health check'}
+app.include_router(friends.router)

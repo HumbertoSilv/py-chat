@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from py_chat.database import get_session
-from py_chat.main.routers.schemas import UserPublic, UserSchema
+from py_chat.main.routers.schemas import UserId, UserSchema
 from py_chat.models.user import User
 
 router = APIRouter(prefix='/users', tags=['users'])
@@ -14,7 +14,7 @@ router = APIRouter(prefix='/users', tags=['users'])
 T_Session = Annotated[Session, Depends(get_session)]
 
 
-@router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
+@router.post('/', status_code=HTTPStatus.CREATED, response_model=UserId)
 async def create_user(user: UserSchema, session: T_Session):
     db_user = session.scalar(
         select(User).where(

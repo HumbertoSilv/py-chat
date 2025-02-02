@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime
 
+import factory
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import StaticPool, create_engine, event
@@ -8,7 +9,15 @@ from sqlalchemy.orm import Session
 
 from py_chat.database import get_session
 from py_chat.main.server.app import app
-from py_chat.models.user import table_registry
+from py_chat.models.user import User, table_registry
+
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: f'test_{n}')
+    email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')
 
 
 @pytest.fixture
@@ -57,3 +66,25 @@ def client(session):
         yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def user(session):
+    user = UserFactory()
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
+
+
+@pytest.fixture
+def other_user(session):
+    user = UserFactory()
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user

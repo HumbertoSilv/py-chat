@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.taskipy.tasks]
 lint = 'ruff check .; ruff check . --diff'
 format = 'ruff check . --fix; ruff format .'
-run = 'fastapi dev py_chat/app.py'
+run = 'fastapi dev py_chat/main/server/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=py_chat -vv'
 post_test = 'coverage html'
@@ -26,6 +26,7 @@ ruff = "^0.9.3"
 taskipy = "^1.14.1"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
+factory-boy = "^3.3.1"
 
 [build-system]
 requires = ["poetry-core"]
