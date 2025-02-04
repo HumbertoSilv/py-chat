@@ -30,9 +30,7 @@ def test_should_return_error_when_not_finding_user_id(client):
 
 
 def test_should_return_error_when_friendship_already_exists(
-    client,
-    user,
-    other_user
+    client, user, other_user
 ):
     # arrange
     client.post(
@@ -56,9 +54,7 @@ def test_should_return_error_when_friendship_already_exists(
 
 
 def test_should_return_a_users_friendships_successfully(
-    client,
-    user,
-    other_user
+    client, user, other_user
 ):
     # arrange
     client.post(

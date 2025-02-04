@@ -6,9 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from py_chat.database import get_session
-from py_chat.main.routers.schemas import FriendList, UserId
+from py_chat.core.database import get_session
 from py_chat.models.user import Friend, User
+from py_chat.schemas.schemas import FriendList, UserId
 
 router = APIRouter(prefix='/friends', tags=['friends'])
 

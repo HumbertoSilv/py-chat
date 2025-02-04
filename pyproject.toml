@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.taskipy.tasks]
 lint = 'ruff check .; ruff check . --diff'
 format = 'ruff check . --fix; ruff format .'
-run = 'fastapi dev py_chat/main/server/app.py'
+run = 'fastapi dev py_chat/main.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=py_chat -vv'
 post_test = 'coverage html'

@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from py_chat.database import get_session
-from py_chat.main.routers.schemas import UserId, UserSchema
+from py_chat.core.database import get_session
 from py_chat.models.user import User
+from py_chat.schemas.schemas import UserId, UserSchema
 
 router = APIRouter(prefix='/users', tags=['users'])
 

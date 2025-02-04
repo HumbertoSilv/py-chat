@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from py_chat.settings import Settings
+from py_chat.core.config import Settings
 
 engine = create_engine(Settings().DATABASE_URL)
 
@@ -9,6 +9,3 @@ engine = create_engine(Settings().DATABASE_URL)
 def get_session():  # pragma: no cover
     with Session(engine) as session:
         yield session
-
-
-# Quando chama isso aqui?

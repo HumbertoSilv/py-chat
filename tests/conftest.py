@@ -7,8 +7,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import StaticPool, create_engine, event
 from sqlalchemy.orm import Session
 
-from py_chat.database import get_session
-from py_chat.main.server.app import app
+from py_chat.core.database import get_session
+from py_chat.main import app
 from py_chat.models.user import User, table_registry
 
 

@@ -26,10 +26,7 @@ def test_should_return_already_existing_username_error(client, user):
     # act
     response = client.post(
         '/users',
-        json={
-            'username': user.username,
-            'email': 'test@example.com'
-        },
+        json={'username': user.username, 'email': 'test@example.com'},
     )
 
     # assert
