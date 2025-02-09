@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from py_chat.core.database import get_session
 from py_chat.main import app
-from py_chat.models.user import User, table_registry
+from py_chat.models.user import Chat, User, table_registry
 
 
 class UserFactory(factory.Factory):
@@ -69,7 +69,7 @@ def client(session):
 
 
 @pytest.fixture
-def user(session):
+def user(session) -> User:
     user = UserFactory()
 
     session.add(user)
@@ -80,7 +80,7 @@ def user(session):
 
 
 @pytest.fixture
-def other_user(session):
+def other_user(session) -> User:
     user = UserFactory()
 
     session.add(user)
@@ -88,3 +88,14 @@ def other_user(session):
     session.refresh(user)
 
     return user
+
+
+@pytest.fixture
+def chat(session) -> Chat:
+    chat = Chat(chat_type='direct')
+
+    session.add(chat)
+    session.commit()
+    session.refresh(chat)
+
+    return chat

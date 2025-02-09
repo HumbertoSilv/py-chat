@@ -1,3 +1,4 @@
+import uuid
 from http import HTTPStatus
 
 
@@ -6,7 +7,7 @@ def test_should_add_a_new_friend_successfully(client, user, other_user):
     response = client.post(
         f'/friends/{user.id}',
         json={
-            'id': other_user.id,
+            'id': str(other_user.id),
         },
     )
 
@@ -16,11 +17,11 @@ def test_should_add_a_new_friend_successfully(client, user, other_user):
 
 def test_should_return_error_when_not_finding_user_id(client):
     # act
-    invalid_user_Id = '000000'
+    invalid_user_Id = uuid.uuid4()
     response = client.post(
         f'/friends/{invalid_user_Id}',
         json={
-            'id': invalid_user_Id,
+            'id': str(invalid_user_Id),
         },
     )
 
@@ -36,7 +37,7 @@ def test_should_return_error_when_friendship_already_exists(
     client.post(
         f'/friends/{user.id}',
         json={
-            'id': other_user.id,
+            'id': str(other_user.id),
         },
     )
 
@@ -44,7 +45,7 @@ def test_should_return_error_when_friendship_already_exists(
     response = client.post(
         f'/friends/{user.id}',
         json={
-            'id': other_user.id,
+            'id': str(other_user.id),
         },
     )
 
@@ -60,7 +61,7 @@ def test_should_return_a_users_friendships_successfully(
     client.post(
         f'/friends/{user.id}',
         json={
-            'id': other_user.id,
+            'id': str(other_user.id),
         },
     )
 

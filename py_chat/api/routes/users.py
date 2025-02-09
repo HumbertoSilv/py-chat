@@ -40,4 +40,4 @@ async def create_user(user: UserSchema, session: T_Session):
     session.commit()
     session.refresh(db_user)
 
-    return db_user
+    return UserId(id=str(db_user.id))

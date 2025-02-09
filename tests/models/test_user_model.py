@@ -13,6 +13,7 @@ def test_create_user_successfully(session, mock_db_time):
         session.add(new_user)
         session.commit()
 
+    # arrange
     user = session.scalar(select(User).where(User.username == 'test'))
 
     # assert
@@ -22,6 +23,8 @@ def test_create_user_successfully(session, mock_db_time):
         'email': 'test@example.com',
         'name': None,
         'avatar_url': None,
+        'chats': [],
+        'messages': [],
         'created_at': time,
         'updated_at': time,
     }

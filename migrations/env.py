@@ -1,12 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
+from py_chat.core.config import Settings
 from py_chat.models.user import table_registry
-from py_chat.settings import Settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
