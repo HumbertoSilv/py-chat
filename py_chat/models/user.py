@@ -10,6 +10,18 @@ from sqlalchemy.orm import Mapped, mapped_column, registry, relationship
 table_registry = registry()
 
 
+@table_registry.mapped_as_dataclass
+class BaseModel:
+    __abstract__ = True
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default_factory=uuid.uuid4,
+        init=False,
+    )
+
+
 class ChaType(str, enum.Enum):
     DIRECT = 'direct'
     GROUP = 'group'
@@ -21,15 +33,9 @@ class MessageType(str, enum.Enum):
 
 
 @table_registry.mapped_as_dataclass
-class User:
+class User(BaseModel):
     __tablename__ = 'users'
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default_factory=uuid.uuid4,
-        init=False
-    )
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(init=False, nullable=True)
@@ -42,13 +48,10 @@ class User:
     )
 
     chats: Mapped[List['Chat']] = relationship(
-        init=False,
-        secondary='chat_participants',
-        back_populates='users'
+        init=False, secondary='chat_participants', back_populates='users'
     )
     messages: Mapped[List['Message']] = relationship(
-        init=False,
-        back_populates='user'
+        init=False, back_populates='user'
     )
 
 
@@ -59,12 +62,12 @@ class Friend:
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey('users.id', ondelete='CASCADE'),
-        primary_key=True
+        primary_key=True,
     )
     friend_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey('users.id', ondelete='CASCADE'),
-        primary_key=True
+        primary_key=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
@@ -78,24 +81,15 @@ class Friend:
 
 
 @table_registry.mapped_as_dataclass
-class Chat:
+class Chat(BaseModel):
     __tablename__ = 'chats'
 
     chat_type: Mapped[ChaType] = mapped_column(Enum(ChaType))
     users: Mapped[List['User']] = relationship(
-        init=False,
-        secondary='chat_participants',
-        back_populates='chats'
+        init=False, secondary='chat_participants', back_populates='chats'
     )
     messages: Mapped[List['Message']] = relationship(
-        init=False,
-        back_populates='chat',
-        cascade='all,delete'
-    )
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default_factory=uuid.uuid4,
+        init=False, back_populates='chat', cascade='all,delete'
     )
 
 
@@ -104,52 +98,28 @@ class ChatParticipant:
     __tablename__ = 'chat_participants'
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('users.id'),
-        primary_key=True
+        UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True
     )
     chat_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('chats.id'),
-        primary_key=True
+        UUID(as_uuid=True), ForeignKey('chats.id'), primary_key=True
     )
 
 
 @table_registry.mapped_as_dataclass
-class Message:
+class Message(BaseModel):
     __tablename__ = 'messages'
 
     content: Mapped[uuid.UUID] = mapped_column(String(5000))
     file_name: Mapped[str] = mapped_column(
-        String(50),
-        init=False,
-        nullable=True
+        String(50), init=False, nullable=True
     )
     file_path: Mapped[str] = mapped_column(
-        String(1000),
-        init=False,
-        nullable=True
+        String(1000), init=False, nullable=True
     )
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'))
     chat_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('chats.id'))
-    chat: Mapped['Chat'] = relationship(
-        init=False,
-        back_populates='messages'
-    )
-    user: Mapped['User'] = relationship(
-        init=False,
-        back_populates='messages'
-    )
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default_factory=uuid.uuid4,
-    )
+    chat: Mapped['Chat'] = relationship(init=False, back_populates='messages')
+    user: Mapped['User'] = relationship(init=False, back_populates='messages')
     message_type: Mapped[MessageType] = mapped_column(
-        Enum(MessageType),
-        default=MessageType.TEXT
+        Enum(MessageType), default=MessageType.TEXT
     )
-
-
-# TODO: implement a base model

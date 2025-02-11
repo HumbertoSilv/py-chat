@@ -19,10 +19,7 @@ T_Session = Annotated[Session, Depends(get_session)]
 @router.post('/{user_id}', status_code=HTTPStatus.NO_CONTENT)
 async def add_friend(user_id: uuid.UUID, friend: UserId, session: T_Session):
     new_friendship = session.scalar(
-        select(User)
-        .where(
-            User.id == uuid.UUID(friend.id)
-        )
+        select(User).where(User.id == uuid.UUID(friend.id))
     )
 
     if not new_friendship:
@@ -31,10 +28,7 @@ async def add_friend(user_id: uuid.UUID, friend: UserId, session: T_Session):
         )
 
     try:
-        friendship = Friend(
-            user_id=user_id,
-            friend_id=uuid.UUID(friend.id)
-        )
+        friendship = Friend(user_id=user_id, friend_id=uuid.UUID(friend.id))
 
         session.add(friendship)
         session.commit()
