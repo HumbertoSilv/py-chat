@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 
@@ -19,3 +20,11 @@ class UserSchema(BaseModel):
 
 class FriendList(BaseModel):
     friends: list[UserPublic]
+
+
+class CreateDirectChatSchema(BaseModel):
+    destination_user_id: UUID
+
+
+class PublicDirectChatSchema(BaseModel):
+    id: UUID
