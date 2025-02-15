@@ -1,9 +1,12 @@
+from typing import List
 from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
+from py_chat.models.user import ChatType
+
 
 class UserId(BaseModel):
-    id: str
+    id: UUID
 
 
 class UserPublic(BaseModel):
@@ -19,7 +22,7 @@ class UserSchema(BaseModel):
 
 
 class FriendList(BaseModel):
-    friends: list[UserPublic]
+    friends: List[UserPublic]
 
 
 class CreateDirectChatSchema(BaseModel):
@@ -28,3 +31,24 @@ class CreateDirectChatSchema(BaseModel):
 
 class PublicDirectChatSchema(BaseModel):
     id: UUID
+
+
+class ReceiveMessageSchema(BaseModel):
+    user_id: UUID
+    chat_id: UUID
+    content: str
+
+
+class MessageSchema(BaseModel):
+    id: UUID
+    content: str
+
+
+class ChatSchema(BaseModel):
+    id: UUID
+    chat_type: ChatType
+    users: List[UserPublic]
+    messages: List[MessageSchema]
+
+    class Config:
+        from_attributes = True  # Permite converter diretamente de SQLAlchemy

@@ -22,7 +22,7 @@ class BaseModel:
     )
 
 
-class ChaType(str, enum.Enum):
+class ChatType(str, enum.Enum):
     DIRECT = 'direct'
     GROUP = 'group'
 
@@ -84,7 +84,7 @@ class Friend:
 class Chat(BaseModel):
     __tablename__ = 'chats'
 
-    chat_type: Mapped[ChaType] = mapped_column(Enum(ChaType))
+    chat_type: Mapped[ChatType] = mapped_column(Enum(ChatType))
     users: Mapped[List['User']] = relationship(
         init=False, secondary='chat_participants', back_populates='chats'
     )
