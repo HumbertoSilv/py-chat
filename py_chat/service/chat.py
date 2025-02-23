@@ -1,13 +1,11 @@
-from sqlalchemy import and_, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session, subqueryload
 
-from py_chat.models.user import Chat, ChatParticipant, User, ChatType
+from py_chat.models.user import Chat, ChatParticipant, ChatType, User
 
 
 def create_direct_chat(
-    db_session: Session,
-    destination_user: User,
-    initiator_user: User
+    db_session: Session, destination_user: User, initiator_user: User
 ) -> Chat:
     try:
         new_chat = Chat(chat_type=ChatType.DIRECT)
@@ -24,16 +22,13 @@ def create_direct_chat(
         raise error
 
 
-def get_user_chats(db_session: Session, user: str) -> list[Chat]:
+def get_user_chats(db_session: Session, user: User) -> list[Chat]:
     query = (
         select(Chat)
         .distinct()
         .join(ChatParticipant, ChatParticipant.chat_id == Chat.id)
-        .where(ChatParticipant.user_id == user)
-        .options(
-            subqueryload(Chat.users),
-            subqueryload(Chat.messages)
-        )
+        .where(ChatParticipant.user_id == user.id)
+        .options(subqueryload(Chat.users), subqueryload(Chat.messages))
     )
 
     chats = db_session.scalars(query).all()

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from py_chat.core.database import get_session
 from py_chat.models.user import User
-from py_chat.schemas.schemas import UserId, UserSchema
+from py_chat.schemas.user import UserId, UserSchema
 
 router = APIRouter(prefix='/users', tags=['users'])
 
