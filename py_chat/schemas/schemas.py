@@ -1,5 +1,6 @@
 from typing import List
 from uuid import UUID
+
 from pydantic import BaseModel, EmailStr
 
 from py_chat.models.user import ChatType
