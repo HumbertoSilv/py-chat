@@ -20,6 +20,12 @@ class BaseModel:
         default_factory=uuid.uuid4,
         init=False,
     )
+    created_at: Mapped[datetime] = mapped_column(
+        init=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        init=False, server_default=func.now(), onupdate=func.now()
+    )
 
 
 class ChatType(str, enum.Enum):
@@ -40,12 +46,6 @@ class User(BaseModel):
     email: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str] = mapped_column(init=False, nullable=True)
     avatar_url: Mapped[str] = mapped_column(init=False, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        init=False, server_default=func.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        init=False, server_default=func.now(), onupdate=func.now()
-    )
 
     chats: Mapped[List['Chat']] = relationship(
         init=False, secondary='chat_participants', back_populates='users'
