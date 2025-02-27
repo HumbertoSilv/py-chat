@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session, subqueryload
 
@@ -22,12 +24,12 @@ def create_direct_chat(
         raise error
 
 
-def get_user_chats(db_session: Session, user: User) -> list[Chat]:
+def get_user_chats(db_session: Session, user: UUID) -> list[Chat]:
     query = (
         select(Chat)
         .distinct()
         .join(ChatParticipant, ChatParticipant.chat_id == Chat.id)
-        .where(ChatParticipant.user_id == user.id)
+        .where(ChatParticipant.user_id == user)
         .options(subqueryload(Chat.users), subqueryload(Chat.messages))
     )
 
