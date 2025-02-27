@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from uuid import UUID
 
+import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jwt import DecodeError, ExpiredSignatureError, decode
@@ -56,3 +57,17 @@ def get_current_user(
         )
 
     return user
+
+
+def decode_token(access_token: str) -> dict:
+    try:
+        payload = jwt.decode(
+            access_token, settings.SECRET_KEY, algorithms=settings.ALGORITHM
+        )
+        return payload
+
+    except jwt.ExpiredSignatureError:
+        return None
+
+    except jwt.DecodeError:
+        return None
