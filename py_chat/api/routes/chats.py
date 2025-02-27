@@ -58,7 +58,7 @@ async def create_direct_chat_(
     '/direct', status_code=HTTPStatus.OK, response_model=list[ChatPublic]
 )
 def list_direct_chats(db_session: T_Session, current_user: T_CurrentUser):
-    chats = get_user_chats(db_session, current_user)
+    chats = get_user_chats(db_session, current_user.id)
 
     for chat in chats:
         chat.users = [
