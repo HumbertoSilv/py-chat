@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -19,8 +19,8 @@ class ChatSchema(BaseModel):
 class ChatPublic(BaseModel):
     id: UUID
     chat_type: ChatType
+    last_message: Optional[MessagePublic]
     users: List[UserPublic]
-    messages: List[MessagePublic]
 
     class Config:
         from_attributes = True  # Permite converter diretamente de SQLAlchemy
