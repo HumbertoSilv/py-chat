@@ -1,8 +1,8 @@
 from collections.abc import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from py_chat.core.config import Settings
-
 
 engine = create_async_engine(
     Settings().DATABASE_URL,
@@ -22,5 +22,5 @@ async def get_async_session() -> AsyncGenerator:
         try:
             yield session
 
-        except Exception as e:
+        except Exception:
             raise
