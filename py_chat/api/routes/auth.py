@@ -4,10 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from py_chat.core.config import Settings
-from py_chat.core.database import get_session
+from py_chat.core.database import get_async_session
 from py_chat.core.security import create_access_token
 from py_chat.models.user import User
 from py_chat.schemas.auth import AccessToken
@@ -15,7 +15,7 @@ from py_chat.schemas.auth import AccessToken
 router = APIRouter(prefix='/auth', tags=['auth'])
 
 settings = Settings()
-T_Session = Annotated[Session, Depends(get_session)]
+T_Session = Annotated[AsyncSession, Depends(get_async_session)]
 T_OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
@@ -24,8 +24,9 @@ T_OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 async def user_login(
     response: Response, form_data: T_OAuth2Form, session: T_Session
 ):
-    user_username = form_data.username.lower()
-    user = session.scalar(select(User).where(User.username == user_username))
+    stmt = select(User).where(User.username == form_data.username.lower())
+    result = await session.execute(stmt)
+    user = result.scalars().first()
 
     if not user:
         raise HTTPException(
