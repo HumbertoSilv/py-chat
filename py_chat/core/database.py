@@ -1,11 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from collections.abc import AsyncGenerator
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from py_chat.core.config import Settings
 
-engine = create_engine(Settings().DATABASE_URL)
+
+engine = create_async_engine(
+    Settings().DATABASE_URL,
+    future=True,
+    # echo=True,
+)
+
+AsyncSessionFactory = async_sessionmaker(
+    engine,
+    autoflush=False,
+    expire_on_commit=False,
+)
 
 
-def get_session():  # pragma: no cover
-    with Session(engine) as session:
-        yield session
+async def get_async_session() -> AsyncGenerator:
+    async with AsyncSessionFactory() as session:
+        try:
+            yield session
+
+        except Exception as e:
+            raise

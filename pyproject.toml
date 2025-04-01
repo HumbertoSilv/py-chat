@@ -15,11 +15,11 @@ post_test = 'coverage html'
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = { extras = ["standard"], version = "^0.115.6" }
-sqlalchemy = "^2.0.37"
+fastapi = { extras = ["standard"], version = "^0.115.12" }
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
+asyncpg = "^0.30.0"
 alembic = "^1.14.1"
 pydantic-settings = "^2.7.1"
-psycopg = { extras = ["binary"], version = "^3.2.4" }
 pyjwt = "^2.10.1"
 
 [tool.poetry.group.dev.dependencies]
