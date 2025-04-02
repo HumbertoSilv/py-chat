@@ -17,3 +17,7 @@ class UserPublic(BaseModel):
 class UserSchema(BaseModel):
     username: str
     email: EmailStr
+
+
+class UserQuery(BaseModel):
+    username: str

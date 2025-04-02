@@ -54,7 +54,7 @@ async def get_user_profile(current_user: T_CurrentUser):
 @router.get(
     '/search', status_code=HTTPStatus.OK, response_model=List[UserPublic]
 )
-async def get_user_profile(session: T_Session, query: T_Query):
+async def search_for_profile(session: T_Session, query: T_Query):
     stmt = select(User).where(User.username.like(f'%{query.username}%'))
 
     result = await session.execute(stmt)

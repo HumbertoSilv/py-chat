@@ -4,17 +4,17 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from py_chat.api.dependencies import get_current_user
-from py_chat.core.database import get_session
+from py_chat.core.database import get_async_session
 from py_chat.models.user import Friend, User
 from py_chat.schemas.friend import FriendListPublic
 from py_chat.schemas.user import UserId
 
-router = APIRouter(prefix='/friends', tags=['friends'])
+router = APIRouter(prefix='/friends', tags=['Friends'])
 
-T_Session = Annotated[Session, Depends(get_session)]
+T_Session = Annotated[AsyncSession, Depends(get_async_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
@@ -22,7 +22,7 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 async def add_friend(
     session: T_Session, current_user: T_CurrentUser, friend: UserId
 ):
-    new_friendship = session.scalar(select(User).where(User.id == friend.id))
+    new_friendship = await session.get(User, friend.id)
 
     if not new_friendship:
         raise HTTPException(
@@ -33,7 +33,7 @@ async def add_friend(
         friendship = Friend(user_id=current_user.id, friend_id=friend.id)
 
         session.add(friendship)
-        session.commit()
+        await session.commit()
 
         return {}
 
@@ -45,7 +45,7 @@ async def add_friend(
 
 
 @router.get('/', response_model=FriendListPublic, status_code=HTTPStatus.OK)
-def get_friends(current_user: T_CurrentUser, session: T_Session):
+async def get_friends(current_user: T_CurrentUser, session: T_Session):
     stmt = (
         select(User)
         .join(
@@ -59,6 +59,7 @@ def get_friends(current_user: T_CurrentUser, session: T_Session):
         )
     )
 
-    friends = session.scalars(stmt).all()
+    result = await session.execute(stmt)
+    friends = result.scalars().all()
 
     return {'friends': friends}
