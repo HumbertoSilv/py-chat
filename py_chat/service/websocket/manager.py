@@ -47,9 +47,9 @@ class WebSocketManager:
         if len(self.chats[str(chat_id)]) == 0:
             del self.chats[str(chat_id)]
 
-    async def broadcast_to_chat(self, chat_id, message: str | dict):
+    async def broadcast_to_chat(self, chat_id: UUID, message: str | dict):
         # if isinstance(message, dict):
         #     message = json.dumps(message)
 
-        for connection in self.chats[chat_id]:
+        for connection in self.chats[str(chat_id)]:
             await connection.send_json(message)

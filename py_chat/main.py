@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from py_chat.api import websocket
 from py_chat.api.routes import auth, chats, friends, users
+from py_chat.api.websocket import websocket
 
 
 @asynccontextmanager
