@@ -8,24 +8,28 @@ readme = "README.md"
 [tool.taskipy.tasks]
 lint = 'ruff check .; ruff check . --diff'
 format = 'ruff check . --fix; ruff format .'
-run = 'fastapi dev py_chat/app.py'
+run = 'fastapi dev py_chat/main.py'
+migrate = 'alembic upgrade head'
+seeds = 'PYTHONPATH=$(pwd) python scripts/seeds.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=py_chat -vv'
 post_test = 'coverage html'
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = { extras = ["standard"], version = "^0.115.6" }
-sqlalchemy = "^2.0.37"
+fastapi = { extras = ["standard"], version = "^0.115.12" }
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
+asyncpg = "^0.30.0"
 alembic = "^1.14.1"
 pydantic-settings = "^2.7.1"
-psycopg = { extras = ["binary"], version = "^3.2.4" }
+pyjwt = "^2.10.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.3"
 taskipy = "^1.14.1"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
+factory-boy = "^3.3.1"
 
 [build-system]
 requires = ["poetry-core"]
