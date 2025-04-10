@@ -1,5 +1,9 @@
 from http import HTTPStatus
 
+import pytest
+
+from py_chat.schemas.user import UserPublic
+
 # test structure
 # - Organizar(Arrange)
 # - Agir(Act)
@@ -7,10 +11,11 @@ from http import HTTPStatus
 # - Teardown
 
 
-def test_create_user_successfully(client):
+@pytest.mark.asyncio
+async def test_create_user_successfully(client):
     # act
-    response = client.post(
-        '/users',
+    response = await client.post(
+        '/users/create',
         json={
             'username': 'test',
             'email': 'test@example.com',
@@ -22,10 +27,11 @@ def test_create_user_successfully(client):
     assert isinstance(response.json().get('id'), str)
 
 
-def test_should_return_already_existing_username_error(client, user):
+@pytest.mark.asyncio
+async def test_should_return_already_existing_username_error(client, user):
     # act
-    response = client.post(
-        '/users',
+    response = await client.post(
+        '/users/create',
         json={'username': user.username, 'email': 'test@example.com'},
     )
 
@@ -34,10 +40,11 @@ def test_should_return_already_existing_username_error(client, user):
     assert response.json() == {'detail': 'Username already exists'}
 
 
-def test_should_return_already_existing_email_error(client, user):
+@pytest.mark.asyncio
+async def test_should_return_already_existing_email_error(client, user):
     # act
-    response = client.post(
-        '/users',
+    response = await client.post(
+        '/users/create',
         json={
             'username': 'user',
             'email': user.email,
@@ -47,3 +54,18 @@ def test_should_return_already_existing_email_error(client, user):
     # assert
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() == {'detail': 'Email already exists'}
+
+
+@pytest.mark.asyncio
+async def test_should_return_profile_data(client, token, user):
+    # arrange
+    user_schema = UserPublic.model_validate(user).model_dump()
+
+    # act
+    response = await client.get(
+        '/users/profile', headers={'Authorization': f'Bearer {token}'}
+    )
+
+    # assert
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == user_schema
