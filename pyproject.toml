@@ -23,6 +23,7 @@ asyncpg = "^0.30.0"
 alembic = "^1.14.1"
 pydantic-settings = "^2.7.1"
 pyjwt = "^2.10.1"
+loguru = "^0.7.3"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.3"

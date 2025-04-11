@@ -33,6 +33,7 @@ class PostgresSettings(BaseSettings):
 
 class EnvironmentSettings(BaseSettings):
     ENVIRONMENT: EnvironmentOption
+    LOG_LEVEL: str
 
 
 class Settings(JWTSettings, PostgresSettings, EnvironmentSettings):
