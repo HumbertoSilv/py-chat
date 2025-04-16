@@ -21,5 +21,10 @@ class UserSchema(BaseModel):
     email: EmailStr
 
 
+class UserUpdateSchema(BaseModel):
+    name: str | None = None
+    avatar_url: str | None = None
+
+
 class UserQuery(BaseModel):
     username: str

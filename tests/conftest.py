@@ -36,7 +36,7 @@ def token(user):
 
 
 @pytest_asyncio.fixture
-async def session(engine) -> AsyncGenerator[AsyncSession, None]:
+async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     AsyncSessionFactory = async_sessionmaker(
         engine,
         autoflush=False,
@@ -83,43 +83,41 @@ def mock_db_time():
 
 
 @pytest_asyncio.fixture
-async def user(session: AsyncSession) -> User:
+async def user(db_session: AsyncSession) -> User:
     user = UserFactory()
 
-    session.add(user)
-    await session.commit()
-    await session.refresh(user)
-
+    await user.save(db_session)
+    await user.refresh(db_session)
     return user
 
 
 @pytest_asyncio.fixture
-async def other_user(session: AsyncSession) -> User:
+async def other_user(db_session: AsyncSession) -> User:
     user = UserFactory()
 
-    session.add(user)
-    await session.commit()
-    await session.refresh(user)
-
+    await user.save(db_session)
+    await user.refresh(db_session)
     return user
 
 
 @pytest_asyncio.fixture
-async def chat(session: AsyncSession) -> Chat:
+async def chat(db_session: AsyncSession) -> Chat:
     chat = Chat(chat_type='direct')
 
-    session.add(chat)
-    await session.commit()
-    await session.refresh(chat)
+    db_session.add(chat)
+    await db_session.commit()
+    await db_session.refresh(chat)
 
     return chat
 
 
 @pytest_asyncio.fixture
-async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+async def client(
+    db_session: AsyncSession,
+) -> AsyncGenerator[AsyncClient, None]:
     # Session dependency override
     async def override_get_session() -> AsyncGenerator[AsyncSession, None]:
-        yield session
+        yield db_session
 
     app.dependency_overrides[get_async_session] = override_get_session
 

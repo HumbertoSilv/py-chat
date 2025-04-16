@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from py_chat.core.config import Settings
 from py_chat.core.database import get_async_session
+from py_chat.models.repositories.user import UserRepository
 from py_chat.models.user import User
 
 settings = Settings()
@@ -16,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/login')
 
 
 async def get_current_user(
-    session: AsyncSession = Depends(get_async_session),
+    db_session: AsyncSession = Depends(get_async_session),
     token: str = Depends(oauth2_scheme),
 ):
     try:
@@ -46,7 +47,7 @@ async def get_current_user(
             headers={'WWW-Authenticate': 'Bearer'},
         )
 
-    user = await session.get(User, UUID(user_id))
+    user = await db_session.get(User, UUID(user_id))
 
     if not user:
         raise HTTPException(
@@ -70,3 +71,9 @@ def decode_token(access_token: str) -> dict:
 
     except jwt.DecodeError:
         return None
+
+
+async def get_user_repository(
+    db_session: AsyncSession = Depends(get_async_session),
+) -> UserRepository:
+    return UserRepository(db_session)
