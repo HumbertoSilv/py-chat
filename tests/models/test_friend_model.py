@@ -7,15 +7,15 @@ from py_chat.models.user import Friend
 
 @pytest.mark.asyncio
 async def test_create_friend_successfully(
-    session: AsyncSession, user, other_user
+    db_session: AsyncSession, user, other_user
 ):
     # act
     new_friend = Friend(user_id=user.id, friend_id=other_user.id)
-    session.add(new_friend)
-    await session.commit()
+    db_session.add(new_friend)
+    await db_session.commit()
 
     # arrange
-    result = await session.execute(
+    result = await db_session.execute(
         select(Friend).where(
             Friend.user_id == user.id, Friend.friend_id == other_user.id
         )
