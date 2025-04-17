@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from py_chat.models.user import ChatType
 from py_chat.schemas.message import MessagePublic
@@ -22,5 +22,5 @@ class ChatPublic(BaseModel):
     last_message: Optional[MessagePublic]
     users: List[UserPublic]
 
-    class Config:
-        from_attributes = True  # Permite converter diretamente de SQLAlchemy
+    # Permite converter diretamente de SQLAlchemy
+    model_config = ConfigDict(from_attributes=True)

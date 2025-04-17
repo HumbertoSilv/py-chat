@@ -17,7 +17,7 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 T_Query = Annotated[UserQuery, Query()]
 
 
-@router.post('/', status_code=HTTPStatus.CREATED, response_model=UserId)
+@router.post('/create', status_code=HTTPStatus.CREATED, response_model=UserId)
 async def create_user(user: UserSchema, session: T_Session):
     stmt = select(User).where(
         (User.username == user.username) | (User.email == user.email)

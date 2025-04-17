@@ -44,7 +44,9 @@ async def add_friend(
         )
 
 
-@router.get('/', response_model=FriendListPublic, status_code=HTTPStatus.OK)
+@router.get(
+    '/list', response_model=FriendListPublic, status_code=HTTPStatus.OK
+)
 async def get_friends(current_user: T_CurrentUser, session: T_Session):
     stmt = (
         select(User)

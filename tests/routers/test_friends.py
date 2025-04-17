@@ -1,11 +1,15 @@
 import uuid
 from http import HTTPStatus
 
+import pytest
 
-def test_should_add_a_new_friend_successfully(client, user, other_user):
+
+@pytest.mark.asyncio
+async def test_should_add_a_new_friend_successfully(client, token, other_user):
     # act
-    response = client.post(
-        f'/friends/{user.id}',
+    response = await client.post(
+        '/friends/add',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'id': str(other_user.id),
         },
@@ -15,11 +19,13 @@ def test_should_add_a_new_friend_successfully(client, user, other_user):
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_should_return_error_when_not_finding_user_id(client):
+@pytest.mark.asyncio
+async def test_should_return_error_when_not_finding_user_id(client, token):
     # act
     invalid_user_Id = uuid.uuid4()
-    response = client.post(
-        f'/friends/{invalid_user_Id}',
+    response = await client.post(
+        '/friends/add',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'id': str(invalid_user_Id),
         },
@@ -30,20 +36,23 @@ def test_should_return_error_when_not_finding_user_id(client):
     assert response.json() == {'detail': 'User not found'}
 
 
-def test_should_return_error_when_friendship_already_exists(
-    client, user, other_user
+@pytest.mark.asyncio
+async def test_should_return_error_when_friendship_already_exists(
+    client, token, other_user
 ):
     # arrange
-    client.post(
-        f'/friends/{user.id}',
+    await client.post(
+        '/friends/add',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'id': str(other_user.id),
         },
     )
 
     # act
-    response = client.post(
-        f'/friends/{user.id}',
+    response = await client.post(
+        '/friends/add',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'id': str(other_user.id),
         },
@@ -54,19 +63,23 @@ def test_should_return_error_when_friendship_already_exists(
     assert response.json() == {'detail': 'Friendship already exists'}
 
 
-def test_should_return_a_users_friendships_successfully(
-    client, user, other_user
+@pytest.mark.asyncio
+async def test_should_return_a_users_friendships_successfully(
+    client, token, other_user
 ):
     # arrange
-    client.post(
-        f'/friends/{user.id}',
+    await client.post(
+        '/friends/add',
+        headers={'Authorization': f'Bearer {token}'},
         json={
             'id': str(other_user.id),
         },
     )
 
     # act
-    response = client.get(f'/friends/{user.id}')
+    response = await client.get(
+        '/friends/list', headers={'Authorization': f'Bearer {token}'}
+    )
 
     # assert
     assert response.status_code == HTTPStatus.OK
