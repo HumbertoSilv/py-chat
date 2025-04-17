@@ -17,6 +17,7 @@ from testcontainers.postgres import PostgresContainer
 from py_chat.core.database import get_async_session
 from py_chat.core.security import create_access_token
 from py_chat.main import app
+from py_chat.models.repositories.user import UserRepository
 from py_chat.models.user import Base, Chat, User
 
 
@@ -127,3 +128,10 @@ async def client(
         yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def user_repository(db_session: AsyncSession):
+    """Fixture to provide a UserRepository instance."""
+
+    return UserRepository(db_session)

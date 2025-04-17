@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from py_chat.models.repositories.interfaces.user import UserRepositoryInterface
 from py_chat.models.user import User
-from py_chat.schemas.user import UserUpdateSchema
+from py_chat.schemas.user import UpdateUserSchema
 
 
 class UserRepository(UserRepositoryInterface):
@@ -34,7 +34,7 @@ class UserRepository(UserRepositoryInterface):
         return result.scalars().first()
 
     async def update_user(
-        self, user_id: UUID, payload: UserUpdateSchema
+        self, user_id: UUID, payload: UpdateUserSchema
     ) -> None:
         user = await self.db_session.get(User, user_id)
 

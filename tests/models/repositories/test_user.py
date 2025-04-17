@@ -7,13 +7,14 @@ from sqlalchemy.future import select
 
 from py_chat.models.repositories.user import UserRepository
 from py_chat.models.user import User
-from py_chat.schemas.user import UserUpdateSchema
+from py_chat.schemas.user import UpdateUserSchema
 
 
 @pytest.mark.asyncio
-async def test_create_user_successfully(db_session: AsyncSession):
+async def test_create_user_successfully(
+    db_session: AsyncSession, user_repository: UserRepository
+):
     # act
-    user_repository = UserRepository(db_session)
     new_user = await user_repository.create_user(
         username='test', email='test@example.com'
     )
@@ -36,13 +37,14 @@ async def test_create_user_successfully(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_create_user_sqlalchemy_error(db_session: AsyncSession):
+async def test_create_user_sqlalchemy_error(
+    db_session: AsyncSession, user_repository: UserRepository
+):
     # arrange
     with patch.object(
         db_session, 'commit', new_callable=AsyncMock
     ) as mock_commit:
         mock_commit.side_effect = SQLAlchemyError()
-        user_repository = UserRepository(db_session)
 
         with pytest.raises(SQLAlchemyError):
             # act
@@ -52,9 +54,10 @@ async def test_create_user_sqlalchemy_error(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_get_user_successfully(db_session: AsyncSession, user: User):
+async def test_get_user_successfully(
+    user: User, user_repository: UserRepository
+):
     # act
-    user_repository = UserRepository(db_session)
     user_result = await user_repository.get_user_by_ID(user.id)
 
     # assert
@@ -64,13 +67,14 @@ async def test_get_user_successfully(db_session: AsyncSession, user: User):
 
 
 @pytest.mark.asyncio
-async def test_get_user_sqlalchemy_error(db_session: AsyncSession, user: User):
+async def test_get_user_sqlalchemy_error(
+    db_session: AsyncSession, user: User, user_repository: UserRepository
+):
     # arrange
     with patch.object(
         db_session, 'get', new_callable=AsyncMock
     ) as mock_commit:
         mock_commit.side_effect = SQLAlchemyError()
-        user_repository = UserRepository(db_session)
 
         with pytest.raises(SQLAlchemyError):
             # act
@@ -79,10 +83,9 @@ async def test_get_user_sqlalchemy_error(db_session: AsyncSession, user: User):
 
 @pytest.mark.asyncio
 async def test_get_user_by_email_successfully(
-    db_session: AsyncSession, user: User
+    user: User, user_repository: UserRepository
 ):
     # act
-    user_repository = UserRepository(db_session)
     user_result = await user_repository.get_user_by_email(user.email)
 
     # assert
@@ -93,14 +96,13 @@ async def test_get_user_by_email_successfully(
 
 @pytest.mark.asyncio
 async def test_get_user_by_email_sqlalchemy_error(
-    db_session: AsyncSession, user: User
+    db_session: AsyncSession, user: User, user_repository: UserRepository
 ):
     # arrange
     with patch.object(
         db_session, 'execute', new_callable=AsyncMock
     ) as mock_commit:
         mock_commit.side_effect = SQLAlchemyError()
-        user_repository = UserRepository(db_session)
 
         with pytest.raises(SQLAlchemyError):
             # act
@@ -109,10 +111,9 @@ async def test_get_user_by_email_sqlalchemy_error(
 
 @pytest.mark.asyncio
 async def test_get_user_by_username_successfully(
-    db_session: AsyncSession, user: User
+    user: User, user_repository: UserRepository
 ):
     # act
-    user_repository = UserRepository(db_session)
     user_result = await user_repository.get_user_by_username(user.username)
 
     # assert
@@ -123,7 +124,7 @@ async def test_get_user_by_username_successfully(
 
 @pytest.mark.asyncio
 async def test_get_user_by_username_sqlalchemy_error(
-    db_session: AsyncSession, user: User
+    db_session: AsyncSession, user: User, user_repository: UserRepository
 ):
     # arrange
     with patch.object(
@@ -138,12 +139,13 @@ async def test_get_user_by_username_sqlalchemy_error(
 
 
 @pytest.mark.asyncio
-async def test_update_user_successfully(db_session: AsyncSession, user: User):
-    update_payload = UserUpdateSchema(
+async def test_update_user_successfully(
+    db_session: AsyncSession, user: User, user_repository: UserRepository
+):
+    update_payload = UpdateUserSchema(
         name='new_name', avatar_url='new_avatar_url'
     )
     # act
-    user_repository = UserRepository(db_session)
     await user_repository.update_user(user.id, update_payload)
 
     # arrange
@@ -157,9 +159,9 @@ async def test_update_user_successfully(db_session: AsyncSession, user: User):
 
 @pytest.mark.asyncio
 async def test_update_user_sqlalchemy_error(
-    db_session: AsyncSession, user: User
+    db_session: AsyncSession, user: User, user_repository: UserRepository
 ):
-    update_payload = UserUpdateSchema(
+    update_payload = UpdateUserSchema(
         name='new_name', avatar_url='new_avatar_url'
     )
     # arrange
@@ -167,7 +169,6 @@ async def test_update_user_sqlalchemy_error(
         db_session, 'commit', new_callable=AsyncMock
     ) as mock_commit:
         mock_commit.side_effect = SQLAlchemyError()
-        user_repository = UserRepository(db_session)
 
         with pytest.raises(SQLAlchemyError):
             # act

@@ -16,12 +16,12 @@ class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserSchema(BaseModel):
+class CreateUserSchema(BaseModel):
     username: str
     email: EmailStr
 
 
-class UserUpdateSchema(BaseModel):
+class UpdateUserSchema(BaseModel):
     name: str | None = None
     avatar_url: str | None = None
 
