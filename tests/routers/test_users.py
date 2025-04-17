@@ -69,3 +69,22 @@ async def test_should_return_profile_data(client, token, user):
     # assert
     assert response.status_code == HTTPStatus.OK
     assert response.json() == user_schema
+
+
+@pytest.mark.asyncio
+async def test_should_return_an_list_of_users(client, user):
+    # arrange
+    user_schema = UserPublic.model_validate(user).model_dump()
+
+    # act
+    response = await client.get(
+        '/users/search',
+        params={'username': user.username},
+    )
+
+    # assert
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == [user_schema]
+
+
+# TODO: cover up error scenarios

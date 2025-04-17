@@ -31,3 +31,17 @@ async def create_user(
     logger.debug('User created: {}', new_user.id)
 
     return new_user
+
+
+async def search_users_by_username(
+    user_repository: UserRepositoryInterface, query: str
+) -> list[User]:
+    logger.debug('Start search user by username: {}', query)
+
+    if not query:
+        return []
+
+    list_of_users = await user_repository.search_username_by_query(query)
+    logger.debug('Found users: {}', list_of_users)
+
+    return list_of_users

@@ -41,3 +41,9 @@ class UserRepository(UserRepositoryInterface):
         await user.update(
             self.db_session, **payload.model_dump(exclude_none=True)
         )
+
+    async def search_username_by_query(self, query: str) -> list[User]:
+        stmt = select(User).where(User.username.like(f'%{query}%'))
+        result = await self.db_session.execute(stmt)
+
+        return result.scalars().all()
