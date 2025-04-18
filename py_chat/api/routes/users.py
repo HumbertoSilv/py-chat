@@ -1,63 +1,56 @@
 from http import HTTPStatus
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
-from py_chat.api.dependencies import get_current_user
+from py_chat.api.dependencies import get_current_user, get_user_repository
 from py_chat.core.database import get_async_session
+from py_chat.core.logger import logger
+from py_chat.models.repositories.interfaces.user import UserRepositoryInterface
 from py_chat.models.user import User
-from py_chat.schemas.user import UserId, UserPublic, UserQuery, UserSchema
+from py_chat.schemas.user import (
+    CreateUserSchema,
+    UserId,
+    UserPublic,
+    UserQuery,
+)
+from py_chat.service.user import create_user, search_users_by_username
 
 router = APIRouter(prefix='/users', tags=['Users'])
 
 T_Session = Annotated[AsyncSession, Depends(get_async_session)]
+T_Repository = Annotated[UserRepositoryInterface, Depends(get_user_repository)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
 T_Query = Annotated[UserQuery, Query()]
 
 
 @router.post('/create', status_code=HTTPStatus.CREATED, response_model=UserId)
-async def create_user(user: UserSchema, session: T_Session):
-    stmt = select(User).where(
-        (User.username == user.username) | (User.email == user.email)
-    )
-    result = await session.execute(stmt)
-    db_user = result.scalars().first()
+async def create_new_user(
+    user_repository: T_Repository, payload: CreateUserSchema
+):
+    logger.debug('Create user request: {}', payload)
 
-    if db_user:
-        if db_user.username == user.username:
-            raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail='Username already exists',
-            )
-        elif db_user.email == user.email:
-            raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail='Email already exists',
-            )
+    new_user = await create_user(user_repository, payload)
 
-    db_user = User(**user.model_dump())
-
-    session.add(db_user)
-    await session.commit()
-    await session.refresh(db_user)
-
-    return UserId(id=str(db_user.id))
+    return UserId(id=new_user.id)
 
 
 @router.get('/profile', status_code=HTTPStatus.OK, response_model=UserPublic)
 async def get_user_profile(current_user: T_CurrentUser):
+    logger.debug('Get user profile request: {}', current_user.id)
+
     return current_user
 
 
 @router.get(
     '/search', status_code=HTTPStatus.OK, response_model=List[UserPublic]
 )
-async def search_for_profile(session: T_Session, query: T_Query):
-    stmt = select(User).where(User.username.like(f'%{query.username}%'))
+async def search_for_profile(user_repository: T_Repository, query: T_Query):
+    logger.debug('Search user by username request: {}', query.username)
 
-    result = await session.execute(stmt)
-    users = result.scalars().all()
+    list_of_users = await search_users_by_username(
+        user_repository, query.username
+    )
 
-    return users
+    return list_of_users

@@ -42,6 +42,13 @@ class User(BaseModel):
         back_populates='user', lazy='selectin'
     )
 
+    def __repr__(self) -> str:
+        return (
+            f'<User(id={self.id}, username={self.username}, '
+            f'email={self.email}, name={self.name}, '
+            f'created_at={self.created_at}, updated_at={self.updated_at})>'
+        )
+
 
 class Friend(Base):
     __tablename__ = 'friends'
